@@ -27,10 +27,16 @@ class CharList extends Component {
   };
 
   onCreateCharList = (data) => {
+    let onselectChar = this.props.onSelectChar;
     return data.map((item) => {
       const clazz = item.thumbnail ? {objectFit: "contain"} : null;
       return (
-        <li key={item.id} className="char__item">
+        <li
+          key={item.id}
+          className="char__item"
+          onClick={() => {
+            onselectChar(item.id);
+          }}>
           <img src={item.thumbnail} alt="abyss" style={clazz} />
           <div className="char__name">{item.name}</div>
         </li>
