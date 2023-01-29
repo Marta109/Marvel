@@ -29,7 +29,10 @@ class CharList extends Component {
   onCreateCharList = (data) => {
     let onselectChar = this.props.onSelectChar;
     return data.map((item) => {
-      const clazz = item.thumbnail ? {objectFit: "contain"} : null;
+      let imgStyle = {'objectFit' : 'cover'};
+      if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+          imgStyle = {'objectFit' : 'unset'};
+      }
       return (
         <li
           key={item.id}
@@ -37,7 +40,7 @@ class CharList extends Component {
           onClick={() => {
             onselectChar(item.id);
           }}>
-          <img src={item.thumbnail} alt="abyss" style={clazz} />
+          <img src={item.thumbnail} alt="abyss" style={imgStyle} />
           <div className="char__name">{item.name}</div>
         </li>
       );
