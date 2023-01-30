@@ -1,4 +1,6 @@
 import React, {Component} from "react";
+import PropTypes from "prop-types";
+
 import MarvelServices from "../../services/MarvelServices";
 import ErrorMessage from "../errorMessage/errorMessage";
 import Spinner from "../spinner/Spinner";
@@ -103,4 +105,8 @@ class CharList extends Component {
     );
   }
 }
+
+CharList.propTypes = {
+  onSelectChar: PropTypes.func
+};
 export default CharList;
