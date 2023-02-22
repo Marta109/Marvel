@@ -20,6 +20,7 @@ class CharList extends Component {
     };
   }
 
+  charsRefArr = [];
   marvelService = new MarvelServices();
 
   componentDidMount() {
@@ -56,9 +57,23 @@ class CharList extends Component {
     this.setState({error: true, load: false});
   };
 
+  onSetRef = (ref) => {
+    if (ref) {
+      this.charsRefArr.push(ref);
+    }
+  };
+
+  onSetFocus = (id) => {
+    this.charsRefArr.forEach((el) =>
+      el.classList.remove("char__item_selected")
+    );
+    this.charsRefArr[id].classList.add("char__item_selected");
+    this.charsRefArr[id].focus();
+  };
+
   onCreateCharList = (data) => {
     let onselectChar = this.props.onSelectChar;
-    return data.map((item) => {
+    return data.map((item, i) => {
       let imgStyle = {objectFit: "cover"};
       if (
         item.thumbnail ===
@@ -70,8 +85,10 @@ class CharList extends Component {
         <li
           key={item.id}
           className="char__item"
+          ref={this.onSetRef}
           onClick={() => {
             onselectChar(item.id);
+            this.onSetFocus(i);
           }}>
           <img src={item.thumbnail} alt="abyss" style={imgStyle} />
           <div className="char__name">{item.name}</div>
@@ -107,6 +124,6 @@ class CharList extends Component {
 }
 
 CharList.propTypes = {
-  onSelectChar: PropTypes.func
+  onSelectChar: PropTypes.func,
 };
 export default CharList;
