@@ -1,102 +1,174 @@
 import "./randomChar.scss";
 // import thor from "../../resources/img/thor.jpeg";
 import mjolnir from "../../resources/img/mjolnir.png";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import MarvelServices from "../../services/MarvelServices";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/errorMessage";
 
-class RandomChar extends React.Component {
-  state = {
-    char: {},
-    loding: true,
-    error: false,
+const RandomChar = () => {
+  const [char, setChar] = useState({});
+  const [loding, setLoding] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    updateChar();
+    const timerId = setInterval(updateChar, 60000);
+    return () => {
+      clearInterval(timerId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onCharLoadid = (char) => {
+    setChar(char);
+    setLoding(false);
   };
 
-  componentDidMount() {
-    this.updateChar();
-  }
-  onCharLoadid = (char) => {
-    this.setState({char, loding: false});
+  const onCharLoading = () => {
+    setLoding(true);
   };
 
-  onCharLoading = () => {
-    this.setState({loding: true});
+  const onError = () => {
+    setLoding(false);
+    setError(true);
   };
 
-  onError = () => {
-    this.setState({loding: false, error: true});
-  };
-  updateChar = () => {
+  const updateChar = () => {
     const randomChar = new MarvelServices();
     const randomId = Math.floor(
       Math.random() * (1011400 - 1011000) + 1011000
     );
-    this.onCharLoading();
-    randomChar
-      .getCharacter(randomId)
-      .then(this.onCharLoadid)
-      .catch(this.onError);
-  };
-  //    randomChar.getRandomCharacter()
-
-  componentDidUpdate() {}
-
-  newRandomChar = () => {
-    this.setState({error: false, loding: true});
-    this.updateChar();
+    onCharLoading();
+    randomChar.getCharacter(randomId).then(onCharLoadid).catch(onError);
   };
 
-  render() {
-    const {char, loding, error} = this.state;
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loding ? <Spinner /> : null;
-    const content = !(loding || error) ? <View char={char} /> : null;
-    // if (error) {
-    //   return <ErrorMessage />;
-    // }
+  const newRandomChar = () => {
+    setError(false);
+    setLoding(true);
+    updateChar();
+  };
 
-    return (
-      <div className="randomchar">
-        {/* {loding ? <Spinner /> : <View char={char} />} */}
-        {errorMessage}
-        {spinner}
-        {content}
-        <div className="randomchar__static">
-          <p className="randomchar__title">
-            Random character for today!
-            <br />
-            Do you want to get to know him better?
-          </p>
-          <p className="randomchar__title">Or choose another one</p>
-          <button
-            className="button button__main"
-            onClick={this.newRandomChar}>
-            <div className="inner">try it</div>
-          </button>
-          <img
-            src={mjolnir}
-            alt="mjolnir"
-            className="randomchar__decoration"
-          />
-        </div>
+  const errorMessage = error ? <ErrorMessage /> : null;
+  const spinner = loding ? <Spinner /> : null;
+  const content = !(loding || error) ? <View char={char} /> : null;
+
+  return (
+    <div className="randomchar">
+      {errorMessage}
+      {spinner}
+      {content}
+      <div className="randomchar__static">
+        <p className="randomchar__title">
+          Random character for today!
+          <br />
+          Do you want to get to know him better?
+        </p>
+        <p className="randomchar__title">Or choose another one</p>
+        <button className="button button__main" onClick={newRandomChar}>
+          <div className="inner">try it</div>
+        </button>
+        <img
+          src={mjolnir}
+          alt="mjolnir"
+          className="randomchar__decoration"
+        />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default RandomChar;
+
+// class RandomChar extends React.Component {
+//   state = {
+//     char: {},
+//     loding: true,
+//     error: false,
+//   };
+
+//   componentDidMount() {
+//     this.updateChar();
+//   }
+//   onCharLoadid = (char) => {
+//     this.setState({char, loding: false});
+//   };
+
+//   onCharLoading = () => {
+//     this.setState({loding: true});
+//   };
+
+//   onError = () => {
+//     this.setState({loding: false, error: true});
+//   };
+//   updateChar = () => {
+//     const randomChar = new MarvelServices();
+//     const randomId = Math.floor(
+//       Math.random() * (1011400 - 1011000) + 1011000
+//     );
+//     this.onCharLoading();
+//     randomChar
+//       .getCharacter(randomId)
+//       .then(this.onCharLoadid)
+//       .catch(this.onError);
+//   };
+//   //    randomChar.getRandomCharacter()
+
+//   newRandomChar = () => {
+//     this.setState({error: false, loding: true});
+//     this.updateChar();
+//   };
+
+//   render() {
+//     const {char, loding, error} = this.state;
+//     const errorMessage = error ? <ErrorMessage /> : null;
+//     const spinner = loding ? <Spinner /> : null;
+//     const content = !(loding || error) ? <View char={char} /> : null;
+//     // if (error) {
+//     //   return <ErrorMessage />;
+//     // }
+
+//     return (
+//       <div className="randomchar">
+//         {/* {loding ? <Spinner /> : <View char={char} />} */}
+//         {errorMessage}
+//         {spinner}
+//         {content}
+//         <div className="randomchar__static">
+//           <p className="randomchar__title">
+//             Random character for today!
+//             <br />
+//             Do you want to get to know him better?
+//           </p>
+//           <p className="randomchar__title">Or choose another one</p>
+//           <button
+//             className="button button__main"
+//             onClick={this.newRandomChar}>
+//             <div className="inner">try it</div>
+//           </button>
+//           <img
+//             src={mjolnir}
+//             alt="mjolnir"
+//             className="randomchar__decoration"
+//           />
+//         </div>
+//       </div>
+//     );
+//   }
+// }
+
+// export default RandomChar;
 
 function View({char}) {
   const {name, description, thumbnail, wiki, homepage} = char;
   let imgStyle = {objectFit: "cover"};
   if (
     thumbnail ===
-    "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available"
+    "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
   ) {
-    imgStyle = {objectFit: "fill"};
+    imgStyle = {objectFit: "contain"};
   }
-  
+
   return (
     <div className="randomchar__block">
       <img
@@ -120,3 +192,4 @@ function View({char}) {
     </div>
   );
 }
+
