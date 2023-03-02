@@ -1,36 +1,34 @@
-class MarvelServices {
-  _apiBase = "https://gateway.marvel.com:443/v1/public/";
-  _apikey = "apikey=a4c83daddd16d8320882f8697640d04c";
-  _baseOffsetCharacters = 210;
+import {useHttp} from "../hooks/http.hook";
 
-  getResource = async (url) => {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-    }
-    return await res.json();
-  };
+const useMarvelServices = () => {
+  const {loading, error, request,clearError} = useHttp();
 
-  getAllCharacters = async (offset=this._baseOffsetCharacters) => {
-    const res = await this.getResource(
-      `${this._apiBase}characters?limit=9&offset=${offset}&${this._apikey}`
+  const _apiBase = "https://gateway.marvel.com:443/v1/public/",
+    _apikey = "apikey=a4c83daddd16d8320882f8697640d04c",
+    _baseOffsetCharacters = 210;
+
+  const getAllCharacters = async (offset = _baseOffsetCharacters) => {
+    const res = await request(
+      `${_apiBase}characters?limit=9&offset=${offset}&${_apikey}`
     );
-    return res.data.results.map(this._transformCharacter);
+    return res.data.results.map(_transformCharacter);
   };
 
-  getCharacter = async (id) => {
-    const res = await this.getResource(`${this._apiBase}characters/${id}?${this._apikey}`);
-    return this._transformCharacter(res.data.results[0]);
+  const getCharacter = async (id) => {
+    const res = await request(`${_apiBase}characters/${id}?${_apikey}`);
+    return _transformCharacter(res.data.results[0]);
   };
 
-  _transformCharacter = (char) => {
+  const _transformCharacter = (char) => {
     return {
       id: char.id,
       name: char.name,
       description: char.description
         ? `${char.description.slice(0, 210)}...`
         : "There is no description for this character",
-      thumbnailStyle: char.thumbnail.path.includes("image_not_available") ? true : false,
+      thumbnailStyle: char.thumbnail.path.includes("image_not_available")
+        ? true
+        : false,
       // thumbnail: char.thumbnail.path.includes('image_not_available')?
       thumbnail: char.thumbnail.path + "." + char.thumbnail.extension,
       homepage: char.urls[0].url,
@@ -38,6 +36,51 @@ class MarvelServices {
       comics: char.comics.items,
     };
   };
-}
+  return {loading, error, getAllCharacters, getCharacter,clearError};
+};
 
-export default MarvelServices;
+export default useMarvelServices;
+
+// class MarvelServices {
+//   _apiBase = "https://gateway.marvel.com:443/v1/public/";
+//   _apikey = "apikey=a4c83daddd16d8320882f8697640d04c";
+//   _baseOffsetCharacters = 210;
+
+//   getResource = async (url) => {
+//     const res = await fetch(url);
+//     if (!res.ok) {
+//       throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+//     }
+//     return await res.json();
+//   };
+
+//   getAllCharacters = async (offset=this._baseOffsetCharacters) => {
+//     const res = await this.getResource(
+//       `${this._apiBase}characters?limit=9&offset=${offset}&${this._apikey}`
+//     );
+//     return res.data.results.map(this._transformCharacter);
+//   };
+
+//   getCharacter = async (id) => {
+//     const res = await this.getResource(`${this._apiBase}characters/${id}?${this._apikey}`);
+//     return this._transformCharacter(res.data.results[0]);
+//   };
+
+//   _transformCharacter = (char) => {
+//     return {
+//       id: char.id,
+//       name: char.name,
+//       description: char.description
+//         ? `${char.description.slice(0, 210)}...`
+//         : "There is no description for this character",
+//       thumbnailStyle: char.thumbnail.path.includes("image_not_available") ? true : false,
+//       // thumbnail: char.thumbnail.path.includes('image_not_available')?
+//       thumbnail: char.thumbnail.path + "." + char.thumbnail.extension,
+//       homepage: char.urls[0].url,
+//       wiki: char.urls[1].url,
+//       comics: char.comics.items,
+//     };
+//   };
+// }
+
+// export default MarvelServices;

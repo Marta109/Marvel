@@ -1,7 +1,7 @@
-import {Component, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 
-import MarvelService from "../../services/MarvelServices";
+import useMarvelServices from "../../services/MarvelServices";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/errorMessage";
 import Skeleton from "../skeleton/Skeleton";
@@ -10,36 +10,39 @@ import "./charInfo.scss";
 
 const CharInfo = (props) => {
   const [char, setChar] = useState(null);
-  const [loading, setLoding] = useState(false);
-  const [error, setError] = useState(false);
+  // const [loading, setLoding] = useState(false);
+  // const [error, setError] = useState(false);
+  const {loading, error, getCharacter, clearError} = useMarvelServices();
+  // const marvelService = new useMarvelServices();
 
-  const marvelService = new MarvelService();
+  
   useEffect(() => {
     updateChar();
   }, [props.charId]);
 
   const updateChar = () => {
+    clearError();
     const {charId} = props;
     if (!charId) {
       return;
     }
-    onCharLoading();
-    marvelService.getCharacter(charId).then(onCharLoaded).catch(onError);
+    // onCharLoading();
+    getCharacter(charId).then(onCharLoaded);
   };
 
   const onCharLoaded = (char) => {
     setChar(char);
-    setLoding(false);
+    // setLoding(false);
   };
 
-  const onCharLoading = () => {
-    setLoding(true);
-  };
+  // const onCharLoading = () => {
+  //   setLoding(true);
+  // };
 
-  const onError = () => {
-    setLoding(false);
-    setError(true);
-  };
+  // const onError = () => {
+  //   setLoding(false);
+  //   setError(true);
+  // };
 
   const skeleton = char || loading || error ? null : <Skeleton />;
   const errorMessage = error ? <ErrorMessage /> : null;

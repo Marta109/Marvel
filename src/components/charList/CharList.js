@@ -1,7 +1,7 @@
-import React, {Component, useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import PropTypes from "prop-types";
 
-import MarvelServices from "../../services/MarvelServices";
+import useMarvelServices from "../../services/MarvelServices";
 import ErrorMessage from "../errorMessage/errorMessage";
 import Spinner from "../spinner/Spinner";
 import "./charList.scss";
@@ -9,31 +9,30 @@ import "./charList.scss";
 
 const CharList = (props) => {
   const [charData, setCharData] = useState([]);
-  const [load, setLoad] = useState(true);
-  const [error, setError] = useState(false);
+  // const [load, setLoad] = useState(true);
+  // const [error, setError] = useState(false);
   const [newItemLoading, setNewItemLoading] = useState(false);
   const [offset, setOffset] = useState(210);
   const [charEnded, setCharEnded] = useState(false);
+  const {loading, error, getAllCharacters} = useMarvelServices();
 
   const charsRefArr = useRef([]);
-  const marvelService = new MarvelServices();
+  // const marvelService = new MarvelServices();
 
   useEffect(() => {
-    onRequest();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    onRequest(offset, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onRequest = (offset) => {
-    onCharLoading();
-    marvelService
-      .getAllCharacters(offset)
-      .then(onCharLoaded)
-      .catch(onError);
+  const onRequest = (offset, inital) => {
+    inital ? setNewItemLoading(false) : setNewItemLoading(true);
+    // onCharLoading();
+    getAllCharacters(offset).then(onCharLoaded);
   };
 
-  const onCharLoading = () => {
-    setNewItemLoading(true);
-  };
+  // const onCharLoading = () => {
+  //   setNewItemLoading(true);
+  // };
 
   const onCharLoaded = (newCharData) => {
     let endChar = false;
@@ -41,16 +40,16 @@ const CharList = (props) => {
       endChar = true;
     }
     setCharData((charData) => [...charData, ...newCharData]);
-    setLoad(false);
+    // setLoad(false);
     setNewItemLoading(false);
     setOffset((offset) => offset + 9);
     setCharEnded(endChar);
   };
 
-  const onError = () => {
-    setError(true);
-    setLoad(false);
-  };
+  // const onError = () => {
+  //   setError(true);
+  //   setLoad(false);
+  // };
 
   const onSetFocus = (id) => {
     charsRefArr.current.forEach((el) =>
@@ -87,15 +86,15 @@ const CharList = (props) => {
   };
 
   const charListItems = onCreateCharList(charData);
-  const spinner = load ? <Spinner /> : null;
+  const spinner = loading && !newItemLoading ? <Spinner /> : null;
   const errorMessage = error ? <ErrorMessage /> : null;
-  const charList = !(spinner || errorMessage) ? charListItems : null;
+  // const charList = !(loading || errorMessage) ? charListItems : null;
 
   return (
     <div className="char__list">
       {spinner}
       {errorMessage}
-      <ul className="char__grid">{charList}</ul>
+      <ul className="char__grid">{charListItems}</ul>
       <button
         className="button button__main button__long"
         style={{display: charEnded ? "none" : "block"}}

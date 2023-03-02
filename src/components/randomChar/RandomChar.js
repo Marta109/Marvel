@@ -2,17 +2,19 @@ import "./randomChar.scss";
 // import thor from "../../resources/img/thor.jpeg";
 import mjolnir from "../../resources/img/mjolnir.png";
 import React, {useEffect, useState} from "react";
-import MarvelServices from "../../services/MarvelServices";
+import useMarvelServices from "../../services/MarvelServices";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/errorMessage";
 
 const RandomChar = () => {
   const [char, setChar] = useState({});
-  const [loding, setLoding] = useState(true);
-  const [error, setError] = useState(false);
+  const {loading, error, getCharacter, clearError} = useMarvelServices();
+  // const [loding, setLoding] = useState(true);
+  // const [error, setError] = useState(false);
 
   useEffect(() => {
     updateChar();
+    clearError();
     const timerId = setInterval(updateChar, 60000);
     return () => {
       clearInterval(timerId);
@@ -22,36 +24,38 @@ const RandomChar = () => {
 
   const onCharLoadid = (char) => {
     setChar(char);
-    setLoding(false);
+    // setLoding(false);
   };
 
-  const onCharLoading = () => {
-    setLoding(true);
-  };
+  // const onCharLoading = () => {
+  //   setLoding(true);
+  // };
 
-  const onError = () => {
-    setLoding(false);
-    setError(true);
-  };
+  // const onError = () => {
+  //   setLoding(false);
+  //   setError(true);
+  // };
 
   const updateChar = () => {
-    const randomChar = new MarvelServices();
+    // const randomChar = new MarvelServices();
+
     const randomId = Math.floor(
       Math.random() * (1011400 - 1011000) + 1011000
     );
-    onCharLoading();
-    randomChar.getCharacter(randomId).then(onCharLoadid).catch(onError);
+    // onCharLoading();
+    // randomChar.getCharacter(randomId).then(onCharLoadid).catch(onError);
+    getCharacter(randomId).then(onCharLoadid);
   };
 
   const newRandomChar = () => {
-    setError(false);
-    setLoding(true);
+    // setError(false);
+    // setLoding(true);
     updateChar();
   };
 
   const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loding ? <Spinner /> : null;
-  const content = !(loding || error) ? <View char={char} /> : null;
+  const spinner = loading ? <Spinner /> : null;
+  const content = !(loading || error) ? <View char={char} /> : null;
 
   return (
     <div className="randomchar">
@@ -192,4 +196,3 @@ function View({char}) {
     </div>
   );
 }
-
