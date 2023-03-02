@@ -8,13 +8,13 @@ import "./charList.scss";
 // import abyss from "../../resources/img/abyss.jpg";
 
 const CharList = (props) => {
+  const {loading, error, getAllCharacters} = useMarvelServices();
   const [charData, setCharData] = useState([]);
   // const [load, setLoad] = useState(true);
   // const [error, setError] = useState(false);
   const [newItemLoading, setNewItemLoading] = useState(false);
   const [offset, setOffset] = useState(210);
   const [charEnded, setCharEnded] = useState(false);
-  const {loading, error, getAllCharacters} = useMarvelServices();
 
   const charsRefArr = useRef([]);
   // const marvelService = new MarvelServices();
