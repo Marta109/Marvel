@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import useMarvelServices from "../../services/MarvelServices";
 import ErrorMessage from "../errorMessage/errorMessage";
 import Spinner from "../spinner/Spinner";
+import { Link } from "react-router-dom";
 
 const SingleComic = (props) => {
   const [comics, setComics] = useState(null);
@@ -62,9 +63,9 @@ const View = ({comics}) => {
         <p className="single-comic__descr">Language: {descriptionLanguage}</p>
         <div className="single-comic__price">{price}$</div>
       </div>
-      <a href="#" className="single-comic__back">
+      <Link to="/comics" className="single-comic__back">
         Back to all
-      </a>
+      </Link>
     </>
   );
 };
