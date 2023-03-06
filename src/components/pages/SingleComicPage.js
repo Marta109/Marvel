@@ -1,37 +1,32 @@
-import "./singleComic.scss";
-// import xMen from "../../resources/img/x-men.png";
+import "./singleComicPage.scss";
 import {useEffect, useState} from "react";
 import useMarvelServices from "../../services/MarvelServices";
 import ErrorMessage from "../errorMessage/errorMessage";
 import Spinner from "../spinner/Spinner";
-import { Link } from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
-const SingleComic = (props) => {
-  const [comics, setComics] = useState(null);
+const SingleComicPage = () => {
+  const [comic, setComic] = useState(null);
   const {loading, error, getComics, clearError} = useMarvelServices();
+  const {comicId} = useParams();
 
   useEffect(() => {
     updateComics();
-  }, [props.comicsId]);
+  }, [comicId]);
 
   const updateComics = () => {
     clearError();
-    const {comicsId} = props;
-    if (!comicsId) {
-      return;
-    }
-
-    getComics(comicsId).then(onComicsLoaded);
+    getComics(comicId).then(onComicsLoaded);
   };
 
-  const onComicsLoaded = (comics) => {
-    setComics(comics);
+  const onComicsLoaded = (comic) => {
+    setComic(comic);
   };
 
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading ? <Spinner /> : null;
-  const content = !(loading || error || !comics) ? (
-    <View comics={comics} />
+  const content = !(loading || error || !comic) ? (
+    <View comic={comic} />
   ) : null;
 
   return (
@@ -43,7 +38,7 @@ const SingleComic = (props) => {
   );
 };
 
-const View = ({comics}) => {
+const View = ({comic}) => {
   const {
     title,
     thumbnail,
@@ -51,7 +46,7 @@ const View = ({comics}) => {
     description,
     pages,
     descriptionLanguage,
-  } = comics;
+  } = comic;
 
   return (
     <>
@@ -59,9 +54,11 @@ const View = ({comics}) => {
       <div className="single-comic__info">
         <h2 className="single-comic__name">{title}</h2>
         <p className="single-comic__descr">{description}</p>
-        <p className="single-comic__descr">{pages} pages</p>
-        <p className="single-comic__descr">Language: {descriptionLanguage}</p>
-        <div className="single-comic__price">{price}$</div>
+        <p className="single-comic__descr">{pages} </p>
+        <p className="single-comic__descr">
+          Language: {descriptionLanguage}
+        </p>
+        <div className="single-comic__price">{price} </div>
       </div>
       <Link to="/comics" className="single-comic__back">
         Back to all
@@ -70,4 +67,4 @@ const View = ({comics}) => {
   );
 };
 
-export default SingleComic;
+export default SingleComicPage;

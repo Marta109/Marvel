@@ -14,7 +14,6 @@ const RandomChar = () => {
 
   useEffect(() => {
     updateChar();
-    clearError();
     const timerId = setInterval(updateChar, 60000);
     return () => {
       clearInterval(timerId);
@@ -38,7 +37,7 @@ const RandomChar = () => {
 
   const updateChar = () => {
     // const randomChar = new MarvelServices();
-
+    clearError();
     const randomId = Math.floor(
       Math.random() * (1011400 - 1011000) + 1011000
     );
