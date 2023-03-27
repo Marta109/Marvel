@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import PropTypes from "prop-types";
+import {CSSTransition, TransitionGroup} from "react-transition-group";
 
 import useMarvelServices from "../../services/MarvelServices";
 import ErrorMessage from "../errorMessage/errorMessage";
@@ -60,8 +61,7 @@ const CharList = (props) => {
   };
 
   const onCreateCharList = (data) => {
-    let onselectChar = props.onSelectChar;
-    return data.map((item, i) => {
+    const items = data.map((item, i) => {
       let imgStyle = {objectFit: "cover"};
       if (
         item.thumbnail ===
@@ -69,20 +69,36 @@ const CharList = (props) => {
       ) {
         imgStyle = {objectFit: "unset"};
       }
+
       return (
-        <li
-          key={item.id}
-          className="char__item"
-          ref={(elRef) => (charsRefArr.current[i] = elRef)}
-          onClick={() => {
-            onselectChar(item.id);
-            onSetFocus(i);
-          }}>
-          <img src={item.thumbnail} alt="abyss" style={imgStyle} />
-          <div className="char__name">{item.name}</div>
-        </li>
+        <CSSTransition key={item.id} timeout={500} classNames="char__item">
+          <li
+            tabIndex={0}
+            key={item.id}
+            className="char__item"
+            ref={(elRef) => (charsRefArr.current[i] = elRef)}
+            onClick={() => {
+              props.onSelectChar(item.id);
+              onSetFocus(i);
+            }}
+            onKeyPress={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                props.onCharSelected(item.id);
+                onSetFocus(i);
+              }
+            }}>
+            <img src={item.thumbnail} alt="abyss" style={imgStyle} />
+            <div className="char__name">{item.name}</div>
+          </li>
+        </CSSTransition>
       );
     });
+
+    return (
+      <ul className="char__grid">
+        <TransitionGroup component={null}>{items}</TransitionGroup>
+      </ul>
+    );
   };
 
   const charListItems = onCreateCharList(charData);
@@ -94,7 +110,8 @@ const CharList = (props) => {
     <div className="char__list">
       {spinner}
       {errorMessage}
-      <ul className="char__grid">{charListItems}</ul>
+      {charListItems}
+      {/* <ul className="char__grid">{charListItems}</ul> */}
       <button
         className="button button__main button__long"
         style={{display: charEnded ? "none" : "block"}}
